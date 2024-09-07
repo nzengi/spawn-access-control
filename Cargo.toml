@@ -1,6 +1,6 @@
 [package]
 name = "spawn-access-control"
-version = "0.1.2"
+version = "0.1.3"
 edition = "2021"
 description = "A WASM-based access-control token library for Web3 developers, providing a high-performance, secure, and customizable solution."
 license = "MIT"
