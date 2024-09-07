@@ -1,6 +1,6 @@
 [package]
 name = "spawn-access-control"
-version = "0.1.7"
+version = "0.1.8"
 edition = "2021"
 description = "A WASM-based access-control token library for Web3 developers, providing a high-performance, secure, and customizable solution."
 license = "MIT"
@@ -23,4 +23,5 @@ wasm-bindgen-test = "0.3"
 
 [package.metadata.docs.rs]
 rustdoc-args = ["--cfg", "docsrs"]
-features = ["default"]
+all-features = true
+no-default-features = false
