@@ -1,6 +1,6 @@
 [package]
 name = "access-control"
-version = "0.1.0"
+version = "0.1.10"
 edition = "2021"
 description = "A rust-based access-control token library for Web3 developers, providing a high-performance, secure, and customizable solution."
 license = "MIT"
@@ -19,6 +19,9 @@ ethers = "2.0"
 serde = { version = "1.0", features = ["derive"] }
 tokio = { version = "1", features = ["full"] }
 serde_json = "1.0"
+wasm-bindgen = "0.2"
+wasm-pack = "0.10" # For building the WASM output
+wasm-bindgen-futures = "0.4"
 
 [package.metadata.docs.rs]
 rustdoc-args = ["--cfg", "docsrs"]
