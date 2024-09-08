@@ -1,15 +1,8 @@
-# RoleManager
+# Access Control and Ownership Management Library for Ethereum Contracts
 
-`RoleManager` is a WebAssembly (WASM) library for managing ownership and roles, with secure role-based access control (RBAC). It provides functionality for assigning roles, removing roles, transferring ownership, and enforcing access control policies based on roles or ownership.
+This library provides a set of utilities for managing access control and ownership of Ethereum-based smart contracts. Built with [ethers-rs](https://github.com/gakonst/ethers-rs), the library offers streamlined methods for creating contract instances and interacting with them on the Ethereum network.
 
-## Key Features:
-- Ownership transfer and validation
-- Role assignment and removal
-- Role-based access control (RBAC)
+## Features
 
-## Example Usage:
-```rust
-let mut role_manager = RoleManager::new("admin");
-role_manager.assign_role("admin", "editor", "user1").unwrap();
-assert!(role_manager.has_role("editor", "user1"));
-```
+- **Access Manager**: Create and manage contract instances using ABI files for flexible interactions.
+- **Ownable Contract Management**: Easily instantiate contracts with ownership functionality.
