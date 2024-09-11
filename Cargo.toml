@@ -1,5 +1,5 @@
 [package]
-name = "access-control"
+name = "spawn-access-control"
 version = "0.1.10"
 edition = "2021"
 description = "A Rust library for access control management with WebAssembly support, including role-based access control (RBAC), permissions, and audit logging."
