@@ -1,34 +1,60 @@
-use ethers::prelude::*;
-use ethers::abi::Abi;
-use std::fs::File;
-use std::io::Read;
-use serde_json;
-use wasm_bindgen::prelude::*;
+#[derive(Debug, Clone)]
+pub struct Ownable {
+    owner: String, // Stores the current owner's name
+}
 
-/// Creates a Contract instance with ownership functionality.
-/// 
-/// # Arguments
-/// * `abi_path` - Path to the ABI file.
-/// * `contract_address` - Address of the contract.
-/// 
-/// # Returns
-/// A Contract instance for interacting with ownable contracts deployed on the Ethereum network.
-#[wasm_bindgen]
-pub async fn create_ownable_instance(
-    abi_path: &str, 
-    contract_address: &str
-) -> Result<JsValue, JsValue> {
-    // Read the ABI file
-    let mut abi_file = File::open(abi_path).map_err(|e| JsValue::from_str(&format!("{}", e)))?;
-    let mut abi_content = String::new();
-    abi_file.read_to_string(&mut abi_content).map_err(|e| JsValue::from_str(&format!("{}", e)))?;
+impl Ownable {
+    // Initializes a new Ownable resource with a specific owner
+    pub fn new(owner: &str) -> Self {
+        Ownable {
+            owner: owner.to_string(),
+        }
+    }
 
-    // Deserialize the ABI content
-    let _abi: Abi = serde_json::from_str(&abi_content).map_err(|e| JsValue::from_str(&format!("{}", e)))?;
+    // Transfers ownership to a new owner
+    pub fn transfer_ownership(&mut self, new_owner: &str) {
+        self.owner = new_owner.to_string();
+    }
 
-    // Parse the contract address (mocking for WASM environment)
-    let _contract_address: Address = contract_address.parse().map_err(|e| JsValue::from_str(&format!("{}", e)))?;
+    // Retrieves the current owner
+    pub fn get_owner(&self) -> &str {
+        &self.owner
+    }
+}
 
-    // Returning a mock contract instance (provider interaction removed for WASM compatibility)
-    Ok(JsValue::from_str("Ownable contract instance created successfully"))
+// Unit tests for the Ownable struct
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    // Test initial ownership
+    #[test]
+    fn test_initial_ownership() {
+        let ownable = Ownable::new("alice");
+        assert_eq!(ownable.get_owner(), "alice");
+    }
+
+    // Test ownership transfer
+    #[test]
+    fn test_transfer_ownership() {
+        let mut ownable = Ownable::new("alice");
+        assert_eq!(ownable.get_owner(), "alice");
+
+        ownable.transfer_ownership("bob");
+        assert_eq!(ownable.get_owner(), "bob");
+    }
+
+    // Test multiple ownership transfers
+    #[test]
+    fn test_multiple_transfers() {
+        let mut ownable = Ownable::new("alice");
+        ownable.transfer_ownership("bob");
+        assert_eq!(ownable.get_owner(), "bob");
+
+        ownable.transfer_ownership("charlie");
+        assert_eq!(ownable.get_owner(), "charlie");
+
+        ownable.transfer_ownership("dave");
+        assert_eq!(ownable.get_owner(), "dave");
+    }
 }

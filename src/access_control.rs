@@ -1,34 +1,34 @@
-use ethers::prelude::*;
-use ethers::abi::Abi;
-use std::fs::File;
-use std::io::Read;
-use serde_json;
-use wasm_bindgen::prelude::*;
+use crate::role::Role;
+use crate::resource::Resource;
 
-/// Creates a Contract instance for managing access control.
-/// 
-/// # Arguments
-/// * `abi_path` - Path to the ABI file.
-/// * `contract_address` - Address of the contract.
-/// 
-/// # Returns
-/// A Contract instance that allows interaction with access control-enabled contracts.
-#[wasm_bindgen]
-pub async fn create_access_control_instance(
-    abi_path: &str, 
-    contract_address: &str
-) -> Result<JsValue, JsValue> {
-    // Read the ABI file
-    let mut abi_file = File::open(abi_path).map_err(|e| JsValue::from_str(&format!("{}", e)))?;
-    let mut abi_content = String::new();
-    abi_file.read_to_string(&mut abi_content).map_err(|e| JsValue::from_str(&format!("{}", e)))?;
+pub struct AccessControl {
+    pub user_roles: Vec<Role>, // List of roles assigned to the user
+}
 
-    // Deserialize the ABI content into an `Abi` structure
-    let _abi: Abi = serde_json::from_str(&abi_content).map_err(|e| JsValue::from_str(&format!("{}", e)))?;
+impl AccessControl {
+    pub fn new() -> Self {
+        AccessControl {
+            user_roles: Vec::new(),
+        }
+    }
 
-    // Contract address parsing
-    let _contract_address: Address = contract_address.parse().map_err(|e| JsValue::from_str(&format!("{}", e)))?;
+    // Add a role to the user
+    pub fn add_role(&mut self, role: Role) {
+        self.user_roles.push(role);
+    }
 
-    // Return mock contract instance (since we're skipping provider setup)
-    Ok(JsValue::from_str("Contract instance created"))
+    // Check if the user has access to a specific resource based on their role
+    pub fn has_access(&self, resource: &Resource) -> bool {
+        for role in &self.user_roles {
+            if resource.is_access_allowed(&role.name) {
+                return true;
+            }
+        }
+        false
+    }
+
+    // Check if the user has a specific role
+    pub fn has_role(&self, role_name: &str) -> bool {
+        self.user_roles.iter().any(|role| role.name == role_name)
+    }
 }

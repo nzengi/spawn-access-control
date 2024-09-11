@@ -1,34 +1,39 @@
-use ethers::prelude::*;
-use ethers::abi::Abi;
-use std::fs::File;
-use std::io::Read;
-use serde_json;
-use wasm_bindgen::prelude::*;
+use crate::{Role, Resource, AccessControl, RateLimiter}; // Permission kaldırıldı, kullanılmıyordu
 
-/// Creates a Contract instance using the provided ABI file and contract address.
-/// 
-/// # Arguments
-/// * `abi_path` - Path to the ABI file.
-/// * `contract_address` - Address of the contract.
-/// 
-/// # Returns
-/// A Contract instance that allows interaction with the contract deployed at the provided address.
-#[wasm_bindgen]
-pub async fn create_access_manager_instance(
-    abi_path: &str, 
-    contract_address: &str
-) -> Result<JsValue, JsValue> {
-    // Read the ABI file
-    let mut abi_file = File::open(abi_path).map_err(|e| JsValue::from_str(&format!("{}", e)))?;
-    let mut abi_content = String::new();
-    abi_file.read_to_string(&mut abi_content).map_err(|e| JsValue::from_str(&format!("{}", e)))?;
+pub struct AccessManager {
+    pub users: Vec<(String, AccessControl)>, // Stores username and their access control
+    pub rate_limiter: RateLimiter, // Rate limiter to prevent excessive requests
+}
 
-    // Deserialize the ABI content into an `Abi` structure
-    let _abi: Abi = serde_json::from_str(&abi_content).map_err(|e| JsValue::from_str(&format!("{}", e)))?;
+impl AccessManager {
+    pub fn new() -> Self {
+        AccessManager {
+            users: Vec::new(),
+            rate_limiter: RateLimiter::new(100, 60), // Example rate limiting: 100 requests per minute
+        }
+    }
 
-    // Parse the contract address (mocking this part since HTTP provider is removed)
-    let _contract_address: Address = contract_address.parse().map_err(|e| JsValue::from_str(&format!("{}", e)))?;
+    // Add a user with their associated access control
+    pub fn add_user(&mut self, username: &str, role: Role) { // self now mutable
+        let mut access_control = AccessControl::new();
+        access_control.add_role(role);
+        self.users.push((username.to_string(), access_control));
+    }
 
-    // Return a mock contract instance (provider interaction is removed for WASM compatibility)
-    Ok(JsValue::from_str("Contract instance created successfully"))
+    // Check if a user has access to a resource
+    pub fn check_access(&mut self, username: &str, resource: &Resource) -> bool { // self now mutable
+        if let Some((_, access_control)) = self.users.iter().find(|(user, _)| user == username) {
+            if self.rate_limiter.is_within_limit() { // rate_limiter needs mutable borrow, so self must be mutable
+                return access_control.has_access(resource);
+            }
+        }
+        false
+    }
+
+    // Add a role to an existing user
+    pub fn add_role_to_user(&mut self, username: &str, role: Role) {
+        if let Some((_, access_control)) = self.users.iter_mut().find(|(user, _)| user == username) {
+            access_control.add_role(role);
+        }
+    }
 }

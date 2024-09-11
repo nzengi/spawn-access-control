@@ -1,5 +1,21 @@
-// This module defines the entry point for the library and declares submodules.
-
 pub mod access_control;
-pub mod ownable;
 pub mod access_manager;
+pub mod role;
+pub mod permission;
+pub mod resource;
+pub mod audit_log;
+pub mod session;
+pub mod rate_limiter;
+pub mod multi_factor_auth;
+pub mod cache;
+
+pub use access_control::AccessControl;
+pub use access_manager::AccessManager;
+pub use role::Role;
+pub use permission::Permission;
+pub use resource::Resource;
+pub use audit_log::AuditLog;
+pub use session::Session;
+pub use rate_limiter::RateLimiter;
+pub use multi_factor_auth::MultiFactorAuth;
+pub use cache::AccessCache;

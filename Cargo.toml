@@ -2,7 +2,7 @@
 name = "access-control"
 version = "0.1.10"
 edition = "2021"
-description = "A rust-based access-control token library for Web3 developers, providing a high-performance, secure, and customizable solution."
+description = "A Rust library for access control management with WebAssembly support, including role-based access control (RBAC), permissions, and audit logging."
 license = "MIT"
 repository = "https://github.com/nzengi/spawn-access-control"
 homepage = "https://github.com/nzengi/access-control"
@@ -11,19 +11,18 @@ readme = "README.md"
 keywords = ["WASM", "access-control", "blockchain", "WebAssembly", "Rust"]
 categories = ["cryptography", "web-programming"]
 
-[lib]
-crate-type = ["cdylib"]
-
 [dependencies]
-ethers = "2.0"
 serde = { version = "1.0", features = ["derive"] }
-tokio = { version = "1", features = ["full"] }
-serde_json = "1.0"
-wasm-bindgen = "0.2"
-wasm-pack = "0.10" # For building the WASM output
-wasm-bindgen-futures = "0.4"
 
-[package.metadata.docs.rs]
-rustdoc-args = ["--cfg", "docsrs"]
-all-features = true
-no-default-features = false
+[target.'cfg(not(target_arch = "wasm32"))'.dependencies]
+mio = "1.0"  # Native platformlarda kullanılan kütüphane
+
+[target.'cfg(target_arch = "wasm32")'.dependencies]
+wasm-bindgen = "0.2"
+js-sys = "0.3"
+
+[build-dependencies]
+wasm-bindgen-cli = "0.2"
+
+[lib]
+crate-type = ["cdylib", "rlib"]  # WebAssembly desteği için cdylib ekleyin
